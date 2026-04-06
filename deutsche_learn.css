@@ -1,0 +1,152 @@
+body {
+  font-family: "Cambria Math", serif;
+  background-color:whitesmoke;
+}
+mark {
+    background-color: greenyellow;
+}
+
+.tab_1 td {
+    border-style: solid;
+    border-color: gold;
+     border-width: 4pt;
+     border-radius: 3pt;
+     background-color:gold;
+     text-align: center;
+     }
+.tab_1 td:hover {
+ background-color:coral;
+}
+.tab_2 td {
+    border-style: solid;
+    border-color: chartreuse;
+    border-width: 4pt;
+    border-radius: 3pt;
+    background-color: chartreuse;
+    text-align: center;
+}
+.tab_2 td:hover {
+    background-color: coral;
+}
+.tab_3 td {
+border-style: solid;
+    border-color:lightseagreen;
+    border-width: 4pt;
+    border-radius: 3pt;
+    background-color: lightseagreen;
+    text-align: center;
+}
+.tab_3 td:hover {
+    background-color: coral;
+}
+.tab_4 td {
+border-style: solid;
+    border-color:cornflowerblue;
+    border-width: 4pt;
+    border-radius: 3pt;
+    background-color: cornflowerblue;
+    text-align: center;
+}
+.tab_4 td:hover {
+    background-color: coral;
+}
+.tab_5 td {
+border-style: solid;
+    border-color:deepskyblue;
+    border-width: 4pt;
+    border-radius: 3pt;
+    background-color: deepskyblue;
+    text-align: center;
+}
+.tab_5 td:hover {
+    background-color: coral;
+}
+.tab_6 td {
+border-style: solid;
+    border-color:lightsalmon;
+    border-width: 4pt;
+    border-radius: 3pt;
+    background-color: lightsalmon;
+    text-align: center;
+}
+.tab_6 td:hover {
+    background-color: coral;
+}
+.tab_7 td {
+border-style: solid;
+    border-color:sandybrown;
+    border-width: 4pt;
+    border-radius: 3pt;
+    background-color: sandybrown;
+    text-align: center;
+}
+.tab_7 td:hover {
+    background-color: coral;
+}
+ header {
+            background-color: black;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+        nav {
+            background:red;
+            padding: 10px;
+            text-align: center;
+        }
+        nav a {
+            color: black;
+            margin: 0 15px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+         footer {
+            background:gold;
+            color:black;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+img { 
+    width: 1350px; 
+    height: 370px;
+ }
+   .container {
+            max-width: 600px;
+            margin: 80px auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        .info {
+            font-size: 16px;
+            color: #333;
+            line-height: 1.8;
+        }
+
+        .info strong {
+            color: #000;
+        }
+
+        .social {
+            margin-top: 20px;
+        }
+
+        .social a {
+            text-decoration: none;
+            color: #007BFF;
+            margin: 0 10px;
+        }
+
+        .social a:hover {
+            text-decoration: underline;
+        }
