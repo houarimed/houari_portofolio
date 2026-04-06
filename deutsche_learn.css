@@ -150,4 +150,6 @@ border-style: solid;
 img { 
 width: 300px;
   height: 200px;
+      align-items: center;
+
 }
