@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Houari — book lover, language learner, fantasy enthusiast, and curious explorer. A personal corner of the internet for stories, friendships, and shared interests.">
+<title>Houari · A Personal Corner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ─── DESIGN TOKENS ─────────────────────────────────────── */
+:root {
+  /* Dark theme (default) */
+  --ink:       #13111a;
+  --ink2:      #1a1726;
+  --ink3:      #221e30;
+  --surface:   rgba(255,255,255,0.04);
+  --surface-h: rgba(255,255,255,0.07);
+  --border:    rgba(255,255,255,0.07);
+  --amber:     #d4956a;
+  --amber-lt:  #e8b592;
+  --amber-dim: rgba(212,149,106,0.12);
+  --sage:      #7a9e87;
+  --sage-dim:  rgba(122,158,135,0.12);
+  --text:      #e8e4dc;
+  --text-muted:#8c8399;
+  --text-dim:  #4a4560;
+  --radius:    18px;
+  --radius-sm: 10px;
+  --trans:     0.35s cubic-bezier(0.4,0,0.2,1);
+  --font-lit:  'Cormorant Garamond', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --shadow:    0 20px 60px rgba(0,0,0,0.5);
+}
+
+[data-theme="light"] {
+  --ink:       #f5f0e8;
+  --ink2:      #ede7d9;
+  --ink3:      #e3dccf;
+  --surface:   rgba(0,0,0,0.04);
+  --surface-h: rgba(0,0,0,0.07);
+  --border:    rgba(0,0,0,0.08);
+  --text:      #1e1a28;
+  --text-muted:#6a6080;
+  --text-dim:  #a89fb8;
+  --amber-dim: rgba(212,149,106,0.10);
+  --sage-dim:  rgba(122,158,135,0.10);
+  --shadow:    0 20px 60px rgba(0,0,0,0.10);
+}
+
+/* ─── RESET ─────────────────────────────────────────────── */
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
+html { scroll-behavior:smooth; font-size:16px }
+body { font-family:var(--font-body); background:var(--ink); color:var(--text); line-height:1.65; overflow-x:hidden; transition:background var(--trans),color var(--trans) }
+a { color:inherit; text-decoration:none }
+ul { list-style:none }
+button { cursor:pointer; font-family:inherit; border:none; background:none }
+img { max-width:100%; display:block }
+
+/* ─── CANVAS (signature element) ───────────────────────── */
+#starfield {
+  position:fixed; inset:0; pointer-events:none; z-index:0;
+  opacity:0.5; transition:opacity var(--trans);
+}
+[data-theme="light"] #starfield { opacity:0.15 }
+
+/* ─── NAV ───────────────────────────────────────────────── */
+nav {
+  position:fixed; top:0; left:0; right:0; z-index:200;
+  padding:0 6%; height:60px;
+  display:flex; align-items:center; justify-content:space-between;
+  transition:background var(--trans),border-color var(--trans);
+}
+nav.scrolled {
+  background:rgba(19,17,26,0.88);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+}
+[data-theme="light"] nav.scrolled { background:rgba(245,240,232,0.88) }
+
+.nav-logo {
+  font-family:var(--font-lit);
+  font-size:1.5rem;
+  font-weight:600;
+  letter-spacing:0.01em;
+  color:var(--amber);
+  font-style:italic;
+}
+.nav-links { display:flex; gap:28px; align-items:center }
+.nav-links a {
+  font-size:0.82rem; font-weight:500;
+  letter-spacing:0.06em; text-transform:uppercase;
+  color:var(--text-muted);
+  transition:color var(--trans);
+}
+.nav-links a:hover { color:var(--amber) }
+.nav-right { display:flex; align-items:center; gap:12px }
+#theme-btn {
+  width:34px; height:34px; border-radius:50%;
+  background:var(--surface); border:1px solid var(--border);
+  display:flex; align-items:center; justify-content:center;
+  font-size:0.95rem;
+  transition:background var(--trans),transform 0.3s;
+}
+#theme-btn:hover { background:var(--amber-dim); transform:scale(1.1) }
+.ham { display:none; flex-direction:column; gap:5px; padding:6px }
+.ham span { display:block; width:20px; height:1.5px; background:var(--text); border-radius:2px; transition:transform var(--trans),opacity var(--trans) }
+
+/* ─── MOBILE NAV ────────────────────────────────────────── */
+.mob-nav {
+  display:none; position:fixed; inset:0;
+  background:var(--ink2); z-index:199;
+  padding:80px 40px 40px;
+  flex-direction:column; gap:6px;
+}
+.mob-nav.open { display:flex }
+.mob-nav a {
+  font-family:var(--font-lit); font-size:2.4rem; font-weight:500;
+  font-style:italic; color:var(--text-muted);
+  padding:10px 0; border-bottom:1px solid var(--border);
+  transition:color var(--trans);
+}
+.mob-nav a:hover { color:var(--amber) }
+
+/* ─── SECTIONS ───────────────────────────────────────────── */
+section { padding:96px 6%; position:relative; z-index:1 }
+.s-label {
+  font-family:var(--font-body); font-size:0.72rem;
+  letter-spacing:0.2em; text-transform:uppercase;
+  color:var(--sage); margin-bottom:10px;
+}
+.s-title {
+  font-family:var(--font-lit);
+  font-size:clamp(2.2rem,5vw,3.8rem);
+  font-weight:600; line-height:1.1;
+  letter-spacing:-0.01em; margin-bottom:16px;
+}
+.s-sub {
+  font-size:1rem; color:var(--text-muted);
+  line-height:1.75; max-width:540px;
+}
+.s-hdr { margin-bottom:60px }
+
+/* ─── HERO ───────────────────────────────────────────────── */
+#hero {
+  min-height:100vh;
+  display:flex; align-items:center;
+  padding-top:80px;
+  position:relative;
+}
+.hero-inner {
+  display:grid;
+  grid-template-columns:1fr 360px;
+  gap:72px; align-items:center;
+  max-width:1100px; margin:0 auto; width:100%;
+}
+.hero-text { display:flex; flex-direction:column; gap:22px }
+.hero-ornament {
+  font-family:var(--font-lit); font-style:italic;
+  font-size:0.85rem; color:var(--text-dim);
+  letter-spacing:0.08em;
+  display:flex; align-items:center; gap:10px;
+}
+.hero-ornament::before { content:'✦'; color:var(--amber); font-style:normal }
+.hero-name {
+  font-family:var(--font-lit);
+  font-size:clamp(4rem,10vw,7rem);
+  font-weight:600; line-height:1;
+  letter-spacing:-0.02em;
+  color:var(--text);
+}
+.hero-tagline {
+  font-family:var(--font-lit); font-style:italic;
+  font-size:clamp(1rem,2.2vw,1.35rem);
+  color:var(--text-muted); line-height:1.6;
+  max-width:500px;
+}
+.hero-tagline em { color:var(--amber); font-style:normal }
+.hero-actions { display:flex; gap:12px; flex-wrap:wrap; padding-top:6px }
+
+/* ─── BUTTONS ────────────────────────────────────────────── */
+.btn {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:12px 26px; border-radius:100px;
+  font-size:0.83rem; font-weight:500;
+  letter-spacing:0.04em;
+  transition:all var(--trans);
+}
+.btn-warm {
+  background:var(--amber); color:#1a120a;
+}
+.btn-warm:hover { background:var(--amber-lt); transform:translateY(-2px); box-shadow:0 10px 28px rgba(212,149,106,0.3) }
+.btn-outline {
+  border:1px solid var(--border); color:var(--text-muted);
+  background:var(--surface);
+}
+.btn-outline:hover { border-color:var(--amber); color:var(--amber); background:var(--amber-dim); transform:translateY(-2px) }
+
+/* ─── PORTRAIT ───────────────────────────────────────────── */
+.portrait-wrap { position:relative; display:flex; justify-content:center }
+.portrait-frame {
+  width:280px; height:360px;
+  border-radius:140px 140px 80px 80px;
+  background:var(--ink3);
+  border:1px solid var(--border);
+  display:flex; align-items:center; justify-content:center;
+  position:relative; overflow:hidden;
+}
+.portrait-frame::before {
+  content:'';
+  position:absolute; inset:0;
+  background:radial-gradient(ellipse at 50% 0%,rgba(212,149,106,0.08),transparent 70%);
+}
+.portrait-glyph { font-size:5rem; opacity:0.3 }
+.portrait-caption {
+  position:absolute; bottom:-16px; left:50%; transform:translateX(-50%);
+  background:var(--amber); color:#1a120a;
+  padding:6px 20px; border-radius:100px;
+  font-size:0.75rem; font-weight:600;
+  letter-spacing:0.06em; white-space:nowrap;
+}
+.floating-tag {
+  position:absolute;
+  background:var(--ink2); border:1px solid var(--border);
+  padding:8px 14px; border-radius:var(--radius-sm);
+  font-size:0.75rem; color:var(--text-muted);
+  font-family:var(--font-lit); font-style:italic;
+  white-space:nowrap;
+  animation:floatTag 4s ease-in-out infinite alternate;
+}
+.ft1 { top:16px; right:-24px; animation-delay:0s }
+.ft2 { bottom:60px; left:-28px; animation-delay:1.5s }
+.ft3 { top:40%; right:-36px; animation-delay:3s }
+@keyframes floatTag { 0%{transform:translateY(0)} 100%{transform:translateY(-8px)} }
+
+/* ─── ABOUT ──────────────────────────────────────────────── */
+#about { background:var(--ink2) }
+.about-grid {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:64px; align-items:center;
+  max-width:1100px; margin:0 auto;
+}
+.about-quote {
+  font-family:var(--font-lit); font-size:1.25rem;
+  font-style:italic; color:var(--text);
+  line-height:1.75; padding-left:24px;
+  border-left:2px solid var(--amber);
+}
+.about-body p {
+  color:var(--text-muted); line-height:1.8;
+  margin-bottom:16px; font-size:0.97rem;
+}
+.personality-pills { display:flex; flex-wrap:wrap; gap:8px; margin-top:24px }
+.pill {
+  padding:6px 16px; border-radius:100px;
+  font-size:0.8rem; font-weight:500;
+  border:1px solid var(--border);
+  color:var(--text-muted); background:var(--surface);
+  transition:all var(--trans);
+}
+.pill:hover { border-color:var(--sage); color:var(--sage); background:var(--sage-dim) }
+
+/* ─── LANGUAGES ──────────────────────────────────────────── */
+#languages { max-width:1100px; margin:0 auto }
+.lang-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:20px }
+.lang-card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); padding:28px 24px;
+  transition:all var(--trans); position:relative; overflow:hidden;
+}
+.lang-card::before {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(135deg,var(--amber-dim),transparent);
+  opacity:0; transition:opacity var(--trans);
+}
+.lang-card:hover { border-color:var(--amber); transform:translateY(-4px) }
+.lang-card:hover::before { opacity:1 }
+.lang-flag { font-size:2rem; margin-bottom:10px; display:block }
+.lang-name {
+  font-family:var(--font-lit); font-weight:600;
+  font-size:1.3rem; margin-bottom:4px;
+}
+.lang-level {
+  font-size:0.78rem; color:var(--amber);
+  font-weight:500; letter-spacing:0.06em;
+  text-transform:uppercase; margin-bottom:14px;
+}
+.lang-bar { height:3px; background:var(--border); border-radius:3px; overflow:hidden }
+.lang-fill {
+  height:100%; width:0%;
+  background:linear-gradient(90deg,var(--amber),var(--amber-lt));
+  border-radius:3px;
+  transition:width 1.3s cubic-bezier(0.4,0,0.2,1);
+}
+.lang-note {
+  font-family:var(--font-lit); font-style:italic;
+  font-size:0.85rem; color:var(--text-dim);
+  margin-top:10px; line-height:1.5;
+}
+.lang-motto {
+  max-width:1100px; margin:32px auto 0;
+  text-align:center;
+  font-family:var(--font-lit); font-style:italic;
+  font-size:1.1rem; color:var(--text-muted);
+}
+.lang-motto em { color:var(--sage) }
+
+/* ─── INTERESTS ──────────────────────────────────────────── */
+#interests { background:var(--ink2) }
+.interests-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:20px; max-width:1100px; margin:0 auto;
+}
+.interest-card {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); padding:28px 24px;
+  transition:all var(--trans); cursor:default;
+}
+.interest-card:hover { border-color:var(--amber); background:var(--surface-h); transform:translateY(-4px) }
+.i-icon { font-size:1.8rem; margin-bottom:14px; display:block }
+.i-title {
+  font-family:var(--font-lit); font-weight:600;
+  font-size:1.2rem; margin-bottom:8px; color:var(--text);
+}
+.i-desc { font-size:0.88rem; color:var(--text-muted); line-height:1.65 }
+.i-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:14px }
+.i-tag {
+  padding:3px 10px; border-radius:100px;
+  font-size:0.72rem; background:var(--amber-dim);
+  color:var(--amber); font-weight:500;
+}
+
+/* ─── BOOKSHELF ──────────────────────────────────────────── */
+#bookshelf { max-width:1100px; margin:0 auto }
+.shelf-quote {
+  font-family:var(--font-lit); font-style:italic;
+  font-size:clamp(1.4rem,3vw,2rem);
+  text-align:center; color:var(--text-muted);
+  max-width:600px; margin:0 auto 56px;
+  line-height:1.5; position:relative;
+}
+.shelf-quote::before,.shelf-quote::after {
+  content:'"';
+  font-size:4rem; line-height:0.5;
+  color:var(--amber); opacity:0.3;
+  position:absolute; font-style:normal;
+}
+.shelf-quote::before { top:0; left:-24px }
+.shelf-quote::after { bottom:-20px; right:-24px }
+.books-row {
+  display:flex; gap:12px; justify-content:center;
+  flex-wrap:wrap; margin-bottom:48px;
+}
+.book-spine {
+  width:52px; height:180px;
+  border-radius:4px 2px 2px 4px;
+  display:flex; align-items:center; justify-content:center;
+  writing-mode:vertical-rl;
+  transform:rotate(180deg);
+  font-family:var(--font-lit); font-size:0.78rem;
+  font-weight:600; letter-spacing:0.06em;
+  padding:12px 6px;
+  cursor:default; position:relative;
+  box-shadow:3px 0 8px rgba(0,0,0,0.3);
+  transition:transform var(--trans),box-shadow var(--trans);
+}
+.book-spine:hover { transform:rotate(180deg) translateY(-10px); box-shadow:3px 8px 20px rgba(0,0,0,0.4) }
+.bs1 { background:#3d2b1a; color:#c89a6a }
+.bs2 { background:#1e2a38; color:#7aacca }
+.bs3 { background:#2a1e35; color:#b07ac8 }
+.bs4 { background:#1a2e22; color:#7aca9a }
+.bs5 { background:#2e2618; color:#caa86a }
+.bs6 { background:#2e1e1e; color:#ca7a7a }
+.bs7 { background:#1e2e2a; color:#7acac8 }
+.book-label {
+  height:24px; width:24px; position:absolute;
+  top:50%; left:50%; transform:translate(-50%,-50%) rotate(180deg);
+  opacity:0.4; font-size:0.9rem; writing-mode:horizontal-tb;
+}
+.shelf-plank {
+  height:10px; background:linear-gradient(to bottom,#5a3e28,#3d2a1a);
+  border-radius:2px; max-width:1100px; width:100%;
+  box-shadow:0 4px 16px rgba(0,0,0,0.4);
+}
+.shelf-genres { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:28px }
+.genre-badge {
+  padding:8px 20px; border-radius:100px;
+  font-family:var(--font-lit); font-style:italic;
+  font-size:0.95rem; color:var(--text-muted);
+  border:1px solid var(--border); background:var(--surface);
+  transition:all var(--trans);
+}
+.genre-badge:hover { border-color:var(--amber); color:var(--amber); background:var(--amber-dim) }
+
+/* ─── CONNECT ────────────────────────────────────────────── */
+#connect { background:var(--ink2) }
+.connect-wrap {
+  max-width:1100px; margin:0 auto;
+  display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:start;
+}
+.connect-text { display:flex; flex-direction:column; gap:24px }
+.connect-text p { color:var(--text-muted); line-height:1.8; font-size:0.97rem }
+.connect-text p strong { color:var(--amber); font-weight:500 }
+.social-cards { display:flex; flex-direction:column; gap:12px }
+.social-card {
+  display:flex; align-items:center; gap:16px;
+  padding:18px 22px; border-radius:var(--radius);
+  background:var(--surface); border:1px solid var(--border);
+  transition:all var(--trans);
+}
+.social-card:hover { border-color:var(--amber); background:var(--surface-h); transform:translateX(6px) }
+.sc-icon {
+  width:40px; height:40px; border-radius:var(--radius-sm);
+  background:var(--amber-dim); display:flex; align-items:center;
+  justify-content:center; font-size:1.2rem; flex-shrink:0;
+}
+.sc-body { flex:1 }
+.sc-name { font-weight:600; font-size:0.92rem; margin-bottom:2px }
+.sc-handle { font-size:0.78rem; color:var(--text-muted) }
+.sc-arrow { color:var(--text-dim); font-size:1rem; transition:color var(--trans),transform var(--trans) }
+.social-card:hover .sc-arrow { color:var(--amber); transform:translateX(4px) }
+
+/* ─── CONTACT ────────────────────────────────────────────── */
+#contact { max-width:1100px; margin:0 auto }
+.contact-grid { display:grid; grid-template-columns:1fr 1fr; gap:64px; align-items:start }
+.contact-note {
+  font-family:var(--font-lit); font-size:1.5rem;
+  font-style:italic; color:var(--text-muted);
+  line-height:1.6; margin-bottom:24px;
+}
+.contact-note em { color:var(--amber); font-style:normal }
+.contact-body p { color:var(--text-muted); font-size:0.95rem; line-height:1.75; margin-bottom:16px }
+.contact-form { display:flex; flex-direction:column; gap:16px }
+.f-group { display:flex; flex-direction:column; gap:7px }
+.f-group label {
+  font-size:0.78rem; font-weight:500;
+  letter-spacing:0.07em; text-transform:uppercase;
+  color:var(--text-dim);
+}
+.f-group input,.f-group textarea,.f-group select {
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius-sm); padding:13px 18px;
+  font-family:var(--font-body); font-size:0.92rem;
+  color:var(--text); outline:none;
+  transition:border-color var(--trans);
+  resize:none;
+}
+.f-group input::placeholder,.f-group textarea::placeholder { color:var(--text-dim) }
+.f-group input:focus,.f-group textarea:focus { border-color:var(--amber) }
+.f-group textarea { min-height:120px }
+.form-sent {
+  display:none; padding:14px 20px;
+  background:var(--sage-dim); border:1px solid var(--sage);
+  border-radius:var(--radius-sm); color:var(--sage);
+  font-size:0.88rem; text-align:center;
+}
+
+/* ─── FOOTER ─────────────────────────────────────────────── */
+footer {
+  border-top:1px solid var(--border);
+  padding:48px 6%; text-align:center;
+  position:relative; z-index:1;
+}
+.footer-glyph {
+  font-family:var(--font-lit); font-style:italic;
+  font-size:2rem; color:var(--amber); margin-bottom:12px;
+  display:block;
+}
+.footer-copy { font-size:0.82rem; color:var(--text-dim) }
+.footer-copy span { color:var(--sage) }
+
+/* ─── REVEAL ANIMATIONS ──────────────────────────────────── */
+.reveal { opacity:0; transform:translateY(24px); transition:opacity 0.7s ease,transform 0.7s ease }
+.reveal.on { opacity:1; transform:none }
+.reveal-l { opacity:0; transform:translateX(-24px); transition:opacity 0.7s ease,transform 0.7s ease }
+.reveal-l.on { opacity:1; transform:none }
+.reveal-r { opacity:0; transform:translateX(24px); transition:opacity 0.7s ease,transform 0.7s ease }
+.reveal-r.on { opacity:1; transform:none }
+@keyframes fadeUp { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:none} }
+.hero-text>* { animation:fadeUp 0.8s ease both }
+.hero-text>*:nth-child(1){animation-delay:.1s}
+.hero-text>*:nth-child(2){animation-delay:.2s}
+.hero-text>*:nth-child(3){animation-delay:.3s}
+.hero-text>*:nth-child(4){animation-delay:.45s}
+.hero-text>*:nth-child(5){animation-delay:.6s}
+.portrait-wrap { animation:fadeUp 0.8s ease .2s both }
+
+/* ─── RESPONSIVE ─────────────────────────────────────────── */
+@media(max-width:1024px){
+  .hero-inner { grid-template-columns:1fr; text-align:center; gap:48px }
+  .hero-text { align-items:center }
+  .hero-tagline { margin:0 auto }
+  .about-grid { grid-template-columns:1fr }
+  .connect-wrap { grid-template-columns:1fr }
+  .contact-grid { grid-template-columns:1fr }
+  .lang-grid { grid-template-columns:1fr 1fr }
+}
+@media(max-width:768px){
+  section { padding:72px 5% }
+  .nav-links,.nav-cta { display:none }
+  .ham { display:flex }
+  .hero-inner { gap:36px }
+  .lang-grid { grid-template-columns:1fr }
+  .portrait-frame { width:220px; height:280px }
+  .ft1,.ft2,.ft3 { display:none }
+}
+@media(prefers-reduced-motion:reduce){
+  .reveal,.reveal-l,.reveal-r,.hero-text>*,.portrait-wrap {
+    animation:none!important; transition:none!important;
+    opacity:1!important; transform:none!important;
+  }
+  .lang-fill,.floating-tag { animation:none!important; transition:none!important }
+  .book-spine:hover { transform:none }
+}
+</style>
+</head>
+<body>
+
+<!-- Ambient starfield canvas -->
+<canvas id="starfield"></canvas>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-logo">Houari</div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#languages">Languages</a></li>
+    <li><a href="#interests">Interests</a></li>
+    <li><a href="#bookshelf">Bookshelf</a></li>
+    <li><a href="#connect">Connect</a></li>
+  </ul>
+  <div class="nav-right">
+    <button id="theme-btn" aria-label="Toggle theme" title="Toggle theme">🌙</button>
+    <div class="ham" id="ham">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<nav class="mob-nav" id="mob-nav">
+  <a href="#about"      onclick="closeMob()">About</a>
+  <a href="#languages"  onclick="closeMob()">Languages</a>
+  <a href="#interests"  onclick="closeMob()">Interests</a>
+  <a href="#bookshelf"  onclick="closeMob()">Bookshelf</a>
+  <a href="#connect"    onclick="closeMob()">Connect</a>
+  <a href="#contact"    onclick="closeMob()">Write to Me</a>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<section id="hero" style="z-index:1;position:relative">
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="hero-ornament">Welcome to my personal corner of the internet</div>
+      <h1 class="hero-name">Houari</h1>
+      <p class="hero-tagline">
+        Book lover, language learner, <em>fantasy enthusiast</em>, and curious explorer of worlds both real and imagined.
+      </p>
+      <div class="hero-actions">
+        <a href="#connect" class="btn btn-warm">✦ Connect With Me</a>
+        <a href="#interests" class="btn btn-outline">My Interests</a>
+        <a href="#connect" class="btn btn-outline">Social Links</a>
+      </div>
+    </div>
+    <div class="portrait-wrap">
+      <div class="portrait-frame">
+        <span class="portrait-glyph"><img src="pfp.png" alt=""></span>
+      </div>
+      <div class="portrait-caption">From Algeria 🇩🇿</div>
+      <div class="floating-tag ft1">📚 Reading</div>
+      <div class="floating-tag ft2">🐉 Fantasy</div>
+      <div class="floating-tag ft3">🌍 Languages</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ ABOUT ═══ -->
+<section id="about">
+  <div class="about-grid">
+    <div class="about-body reveal-l">
+      <div class="s-label">A Bit About Me</div>
+      <h2 class="s-title">Hello, I'm Houari</h2>
+      <p>Hello! I'm Houari from Algeria. I enjoy discovering new stories, learning languages, discussing fantasy worlds, exploring history, and meeting people from different cultures.</p>
+      <p>This website is my personal corner of the internet — a place where you can learn about my interests and, if you feel like it, reach out and say hello.</p>
+      <p>I believe the best conversations start with shared curiosity. Whether it's debating magic systems, recommending a book, swapping phrases in a new language, or just chatting about something interesting — I'm always happy to connect.</p>
+      <div class="personality-pills">
+        <span class="pill">Curious</span>
+        <span class="pill">Imaginative</span>
+        <span class="pill">Friendly</span>
+        <span class="pill">Thoughtful</span>
+        <span class="pill">Open-Minded</span>
+        <span class="pill">Lifelong Learner</span>
+      </div>
+    </div>
+    <div class="reveal-r">
+      <p class="about-quote">
+        "Every book is a door. Every language is a window. Every person I meet comes from a world I haven't fully explored yet — and that's exactly what keeps me curious."
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ LANGUAGES ═══ -->
+<section id="languages">
+  <div class="s-hdr reveal">
+    <div class="s-label">Communication</div>
+    <h2 class="s-title">Languages I Speak</h2>
+  </div>
+  <div class="lang-grid reveal">
+    <div class="lang-card">
+      <span class="lang-flag">🇩🇿</span>
+      <div class="lang-name">Arabic</div>
+      <div class="lang-level">Native</div>
+      <div class="lang-bar"><div class="lang-fill" data-pct="100"></div></div>
+      <div class="lang-note">The language of my home, my family, and my earliest stories.</div>
+    </div>
+    <div class="lang-card">
+      <span class="lang-flag">🇬🇧</span>
+      <div class="lang-name">English</div>
+      <div class="lang-level">Advanced · C1</div>
+      <div class="lang-bar"><div class="lang-fill" data-pct="88"></div></div>
+      <div class="lang-note">The language I read most of my books in — and the one that opened the internet to me.</div>
+    </div>
+    <div class="lang-card">
+      <span class="lang-flag">🇫🇷</span>
+      <div class="lang-name">French</div>
+      <div class="lang-level">Learning & Practicing</div>
+      <div class="lang-bar"><div class="lang-fill" data-pct="65"></div></div>
+      <div class="lang-note">A language woven into Algerian life — I'm working on making it more fluent and natural.</div>
+    </div>
+    <div class="lang-card">
+      <span class="lang-flag">🇩🇪</span>
+      <div class="lang-name">German</div>
+      <div class="lang-level">Learning</div>
+      <div class="lang-bar"><div class="lang-fill" data-pct="18"></div></div>
+      <div class="lang-note">My newest project — the challenge is half the fun.</div>
+    </div>
+  </div>
+  <p class="lang-motto">
+    <em>"Every language opens a new way of seeing the world."</em>
+  </p>
+</section>
+
+<!-- ═══ INTERESTS ═══ -->
+<section id="interests">
+  <div class="s-hdr reveal" style="max-width:1100px;margin:0 auto 60px">
+    <div class="s-label">What I'm Into</div>
+    <h2 class="s-title">Interests</h2>
+    <p class="s-sub">The things that fill my evenings, fuel my conversations, and make me who I am.</p>
+  </div>
+  <div class="interests-grid">
+    <div class="interest-card reveal">
+      <span class="i-icon">📚</span>
+      <div class="i-title">Reading Fantasy Novels</div>
+      <p class="i-desc">Stories are how I explore possibilities. I'm drawn to rich, immersive worlds — the kind that stay with you long after the last page.</p>
+      <div class="i-tags">
+        <span class="i-tag">Epic Fantasy</span>
+        <span class="i-tag">Dark Fantasy</span>
+        <span class="i-tag">Worldbuilding</span>
+        <span class="i-tag">Character-driven</span>
+      </div>
+    </div>
+    <div class="interest-card reveal">
+      <span class="i-icon">🌍</span>
+      <div class="i-title">Language Learning</div>
+      <p class="i-desc">There's something almost magical about the moment a foreign sentence starts to make sense. I chase that feeling.</p>
+      <div class="i-tags">
+        <span class="i-tag">English</span>
+        <span class="i-tag">French</span>
+        <span class="i-tag">German</span>
+      </div>
+    </div>
+    <div class="interest-card reveal">
+      <span class="i-icon">🏰</span>
+      <div class="i-title">Fantasy Worlds</div>
+      <p class="i-desc">Kingdoms, ancient magic, forgotten gods, dragons — I love thinking through the internal logic of fictional universes and what makes them feel real.</p>
+      <div class="i-tags">
+        <span class="i-tag">Magic Systems</span>
+        <span class="i-tag">Dragons</span>
+        <span class="i-tag">Ancient Legends</span>
+      </div>
+    </div>
+    <div class="interest-card reveal">
+      <span class="i-icon">📜</span>
+      <div class="i-title">History</div>
+      <p class="i-desc">Real history is stranger and more gripping than most fiction. I'm fascinated by empires, turning points, and the humans behind them.</p>
+      <div class="i-tags">
+        <span class="i-tag">Medieval History</span>
+        <span class="i-tag">Empires</span>
+        <span class="i-tag">Historical Stories</span>
+      </div>
+    </div>
+    <div class="interest-card reveal">
+      <span class="i-icon">💡</span>
+      <div class="i-title">Technology</div>
+      <p class="i-desc">I'm genuinely curious about where technology is taking us — the possibilities are exciting and sometimes a little daunting, in the best way.</p>
+      <div class="i-tags">
+        <span class="i-tag">Innovation</span>
+        <span class="i-tag">AI</span>
+        <span class="i-tag">Future Tech</span>
+      </div>
+    </div>
+    <div class="interest-card reveal">
+      <span class="i-icon">🎮</span>
+      <div class="i-title">Story-Rich Games</div>
+      <p class="i-desc">When a game has a great story and a world worth exploring, it becomes something else entirely — interactive fiction at its best.</p>
+      <div class="i-tags">
+        <span class="i-tag">Fantasy RPGs</span>
+        <span class="i-tag">Story-driven</span>
+      </div>
+    </div>
+    <div class="interest-card reveal">
+      <span class="i-icon">🤝</span>
+      <div class="i-title">Meeting New People</div>
+      <p class="i-desc">I love learning how people in different places see the world. Every new conversation is a small adventure.</p>
+      <div class="i-tags">
+        <span class="i-tag">Culture Exchange</span>
+        <span class="i-tag">Recommendations</span>
+        <span class="i-tag">Friendship</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ BOOKSHELF ═══ -->
+<section id="bookshelf">
+  <div class="s-hdr reveal" style="text-align:center">
+    <div class="s-label" style="text-align:center">What I Read</div>
+    <h2 class="s-title" style="text-align:center">The Bookshelf</h2>
+  </div>
+  <div class="shelf-quote reveal">
+    A reader lives a thousand lives before he dies.
+  </div>
+  <div class="books-row reveal">
+    <div class="book-spine bs1">Game of Thrones</div>
+    <div class="book-spine bs2">The Hobbit</div>
+    <div class="book-spine bs3">Elric of Melniboné</div>
+    <div class="book-spine bs4">The Name of the Wind</div>
+    <div class="book-spine bs5">Howl's Moving Castle</div>
+    <div class="book-spine bs6">The Shodow of the Wind</div>
+    <div class="book-spine bs7">The Angels Game</div>
+    <div class="book-spine bs1">Mistborn</div>
+    <div class="book-spine bs2">Gardens of the Moon</div>
+    <div class="book-spine bs3">Empire of Silence</div>
+    <div class="book-spine bs4">Wizard of Earthsea</div>
+    <div class="book-spine bs5">Pawn of Prophecy</div>
+    <div class="book-spine bs6">The Way of Kings</div>
+    <div class="book-spine bs7">Assassin's Apprentice</div>
+    <div class="book-spine bs1">Freiran Beyond Journey's End</div>
+    <div class="book-spine bs2">The Shadow of the Torturer</div>
+    <div class="book-spine bs3">The Sailor on the Seas of Fate</div>
+    <div class="book-spine bs4">Clash of Kings</div>
+    <div class="book-spine bs5">Fire and Blood</div>
+    <div class="book-spine bs6">A Knight of Seven Kingdoms</div>
+    <div class="book-spine bs7">The Wise Man Fear</div>
+    <div class="book-spine bs1">The Chronicles of Corum</div>
+    <div class="book-spine bs2">The Wheel of Time</div>
+    <div class="book-spine bs3">The Begining After the End</div>
+    <div class="book-spine bs4">The Lord Rings</div>
+    <div class="book-spine bs5">Storm of Swords</div>
+    <div class="book-spine bs6">Dresden Files</div>
+    <div class="book-spine bs7">Lies of Lockamora</div>
+   
+  </div>
+  <div class="shelf-plank reveal"></div>
+  <div class="shelf-genres reveal" style="max-width:1100px;margin:28px auto 0">
+    <div class="genre-badge">Epic Fantasy</div>
+    <div class="genre-badge">Dark Fantasy</div>
+    <div class="genre-badge">Historical Fiction</div>
+    <div class="genre-badge">Adventure</div>
+    <div class="genre-badge">Science Fiction</div>
+    <div class="genre-badge">Mythology</div>
+    <div class="genre-badge">World History</div>
+  </div>
+</section>
+
+<!-- ═══ CONNECT ═══ -->
+<section id="connect">
+  <div class="s-hdr reveal" style="max-width:1100px;margin:0 auto 60px">
+    <div class="s-label">Let's Talk</div>
+    <h2 class="s-title">Let's Connect</h2>
+    <p class="s-sub">If you enjoy books, fantasy worlds, languages, history, or simply interesting conversations — I'd be genuinely happy to connect.</p>
+  </div>
+  <div class="connect-wrap">
+    <div class="connect-text reveal-l">
+      <p>I'm not here to network professionally — I'm here to meet people who find the same things interesting. If you've ever recommended a book to a stranger, argued about which magic system is most original, or spent too long learning a language just because it seemed interesting, we'll probably get along.</p>
+      <p>Feel free to reach out on any platform that suits you. I try to reply to everyone who sends a thoughtful message.</p>
+      <p><strong>Good conversation starters:</strong> your current read, a language you're learning, a fantasy world you love, a historical era you find fascinating, or just a hello.</p>
+    </div>
+    <div class="social-cards reveal-r">
+    <a href="https://www.linkedin.com/in/mohammedi-houari-a383b3181?utm_source=share_via&utm_content=profile&utm_medium=member_android" class="social-card">
+        <div class="sc-icon">💼</div>
+        <div class="sc-body">
+          <div class="sc-name">LinkedIn</div>
+        </div>
+        <span class="sc-arrow">→</span>
+        </a>
+      <a href="https://www.facebook.com/share/1JLBiqqgtk/" class="social-card">
+        <div class="sc-icon">👤</div>
+        <div class="sc-body">
+          <div class="sc-name">Facebook</div>
+          <div class="sc-handle">Personal profile</div>
+        </div>
+        <span class="sc-arrow">→</span>
+      </a>
+      <a href="https://www.instagram.com/houari_becoming?igsh=MXNibHI5bTYzbHhmbg==" class="social-card">
+        <div class="sc-icon">📷</div>
+        <div class="sc-body">
+          <div class="sc-name">Instagram</div>
+          <div class="sc-handle">@houari_becoming</div>
+        </div>
+        <span class="sc-arrow">→</span>
+      </a>
+      <a href="http://www.goodreads.com/houari_becoming" class="social-card">
+        <div class="sc-icon">📖</div>
+        <div class="sc-body">
+          <div class="sc-name">Goodreads</div>
+          <div class="sc-handle">Books I've read & loved</div>
+        </div>
+        <span class="sc-arrow">→</span>
+      </a>
+      <a href="mailto:mohammedih33@gmail.com" class="social-card">
+        <div class="sc-icon">✉️</div>
+        <div class="sc-body">
+          <div class="sc-name">Email</div>
+          <div class="sc-handle">mohammedih33@gmail.com</div>
+        </div>
+        <span class="sc-arrow">→</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CONTACT ═══ -->
+<section id="contact" style="background:var(--ink2)">
+  <div class="contact-grid" style="max-width:1100px;margin:0 auto">
+    <div class="reveal-l">
+      <div class="s-label">Write to Me</div>
+      <h2 class="s-title">Say Hello</h2>
+      <p class="contact-note">
+        There's no <em>wrong</em> reason to reach out.
+      </p>
+      <div class="contact-body">
+        <p>This form goes straight to me. Tell me where you're from, what you're reading, what language you're learning, or just introduce yourself.</p>
+        <p>I read every message and try my best to reply to all of them. Looking forward to hearing from you.</p>
+      </div>
+    </div>
+    <div class="contact-form reveal-r">
+      <div class="f-group">
+        <label>Your Name</label>
+        <input type="text" id="f-name" placeholder="What shall I call you?">
+      </div>
+      <div class="f-group">
+        <label>Your Country</label>
+        <input type="text" id="f-country" placeholder="Where in the world are you?">
+      </div>
+      <div class="f-group">
+        <label>Message</label>
+        <textarea id="f-msg" placeholder="Tell me about yourself, recommend a book, say hello…"></textarea>
+      </div>
+      <button class="btn btn-warm" style="width:100%;justify-content:center" onclick="sendMsg()">✦ Send Message</button>
+      <div class="form-sent" id="form-sent">✓ Message sent! I'll write back soon.</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-glyph">✦</span>
+  <p class="footer-copy">Built as a place for <span>stories, friendships, and shared interests</span>.<br>— Houari, Algeria</p>
+</footer>
+
+<script>
+/* ─── STARFIELD CANVAS ─────────────────────────────────── */
+(function(){
+  const c=document.getElementById('starfield');
+  const ctx=c.getContext('2d');
+  let W,H,stars=[];
+  const N=140;
+
+  function resize(){
+    W=c.width=window.innerWidth;
+    H=c.height=window.innerHeight;
+  }
+
+  function mkStar(){
+    return {
+      x:Math.random()*W,
+      y:Math.random()*H,
+      r:Math.random()*1.2+0.2,
+      o:Math.random()*0.6+0.1,
+      sp:Math.random()*0.003+0.001,
+      phase:Math.random()*Math.PI*2,
+      // occasional amber ember
+      warm:Math.random()<0.12
+    };
+  }
+
+  function init(){
+    resize();
+    stars=[];
+    for(let i=0;i<N;i++) stars.push(mkStar());
+  }
+
+  let t=0;
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    t+=0.012;
+    stars.forEach(s=>{
+      const pulse=Math.sin(t*s.sp*300+s.phase)*0.35+0.65;
+      ctx.beginPath();
+      ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle=s.warm
+        ?`rgba(212,149,106,${s.o*pulse})`
+        :`rgba(220,210,255,${s.o*pulse})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize',()=>{resize();});
+  init();
+  draw();
+})();
+
+/* ─── NAV SCROLL ───────────────────────────────────────── */
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>{
+  nav.classList.toggle('scrolled',window.scrollY>50);
+  triggerBars();
+});
+
+/* ─── THEME TOGGLE ─────────────────────────────────────── */
+let dark=true;
+document.getElementById('theme-btn').addEventListener('click',()=>{
+  dark=!dark;
+  document.documentElement.setAttribute('data-theme',dark?'dark':'light');
+  document.getElementById('theme-btn').textContent=dark?'🌙':'☀️';
+});
+
+/* ─── MOBILE NAV ───────────────────────────────────────── */
+const ham=document.getElementById('ham');
+const mobNav=document.getElementById('mob-nav');
+ham.addEventListener('click',()=>{
+  mobNav.classList.toggle('open');
+  const s=ham.querySelectorAll('span');
+  if(mobNav.classList.contains('open')){
+    s[0].style.transform='translateY(6.5px) rotate(45deg)';
+    s[1].style.opacity='0';
+    s[2].style.transform='translateY(-6.5px) rotate(-45deg)';
+  } else {
+    s.forEach(x=>{x.style.transform='';x.style.opacity='';});
+  }
+});
+function closeMob(){
+  mobNav.classList.remove('open');
+  const s=ham.querySelectorAll('span');
+  s.forEach(x=>{x.style.transform='';x.style.opacity='';});
+}
+
+/* ─── SCROLL REVEAL ────────────────────────────────────── */
+const revEls=document.querySelectorAll('.reveal,.reveal-l,.reveal-r');
+const revObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('on'); });
+},{threshold:0.08,rootMargin:'0px 0px -30px 0px'});
+revEls.forEach(el=>revObs.observe(el));
+
+/* ─── LANGUAGE BARS ────────────────────────────────────── */
+let barsDone=false;
+function triggerBars(){
+  if(barsDone)return;
+  const sec=document.getElementById('languages');
+  if(!sec)return;
+  if(sec.getBoundingClientRect().top<window.innerHeight-80){
+    barsDone=true;
+    document.querySelectorAll('.lang-fill').forEach(el=>{
+      el.style.width=el.dataset.pct+'%';
+    });
+  }
+}
+// also trigger on load if already in view
+setTimeout(triggerBars,500);
+
+/* ─── CONTACT FORM ─────────────────────────────────────── */
+function sendMsg(){
+  const name=document.getElementById('f-name').value.trim();
+  const country=document.getElementById('f-country').value.trim();
+  const msg=document.getElementById('f-msg').value.trim();
+  if(!name||!msg){alert('Please fill in your name and message.');return;}
+  const body=`Name: ${name}\nFrom: ${country||'Not specified'}\n\n${msg}`;
+  window.location.href=`mailto:mohammedih33@gmail.com?subject=Hello from ${encodeURIComponent(name)}&body=${encodeURIComponent(body)}`;
+  const el=document.getElementById('form-sent');
+  el.style.display='block';
+  setTimeout(()=>el.style.display='none',6000);
+}
+</script>
+</body>
+</html>
